@@ -1,13 +1,5 @@
 --[[
-
 Stained Glass
-
-This mod provides luminescent stained glass blocks for Minetest 0.4.7+
-
-Depends:
-[moreblocks] by Calinou
-[unifieddyes] by VanessaE
-
 ==============================================================================
 Sat 04 May 2013 01:52:35 PM EDT
 
@@ -42,7 +34,7 @@ August 2018 -- altered to use proper colored itemstacks with crafting
 stainedglass = {}
 stainedglass.old_static_nodes = {}
 
-local myglow = core.LIGHT_MAX - 3
+local GLOW_DEFAULT = core.LIGHT_MAX - 3
 
 minetest.register_node("stained_glass:stained_glass", {
 	description = "Stained Glass",
@@ -53,7 +45,7 @@ minetest.register_node("stained_glass:stained_glass", {
 	palette = "unifieddyes_palette_extended.png",
 	sunlight_propagates = true,
 	use_texture_alpha = "blend",
-	light_source = myglow,
+	light_source = GLOW_DEFAULT,
 	is_ground_content = false,
 	walkable = true,
 	groups = {snappy=2,cracky=3,oddly_breakable_by_hand=3, not_in_creative_inventory=1, ud_param2_colorable = 1},
@@ -79,7 +71,7 @@ minetest.register_node("stained_glass:stained_trap_glass", {
 	palette = "unifieddyes_palette_extended.png",
 	sunlight_propagates = true,
 	use_texture_alpha = "blend",
-	light_source = myglow,
+	light_source = GLOW_DEFAULT,
 	is_ground_content = false,
 	walkable = false,
 	groups = {snappy=2,cracky=3,oddly_breakable_by_hand=3, not_in_creative_inventory=1, ud_param2_colorable = 1},
@@ -122,27 +114,17 @@ unifieddyes.register_color_craft({
 
 function stainedglass.makenode(arg)
 	local name=arg.blockname
-	local myglow=arg.glow
-	local myprefix=arg.prefix
-	local imagename=arg.imagename
-	local safe=arg.walkflag
-
-	local function tchelper(first, rest)
-			return first:upper()..rest:lower()
-	end -- from lua-users.org/wiki/StringRecipes
+	-- TODO: The other args are unused
 
 	table.insert(stainedglass.old_static_nodes, "stained_glass:"..name)
 end
 
 -- maybe someday, I can cleanly combine these two functions.
 
-function stained_trapglass_define(arg)
-	local code=arg.colorcode
+local function stained_trapglass_define(arg)
 	local name=arg.colorname
-	local rawdyename=arg.recipe
 	local mydye=arg.recipe
 	local myshadename=arg.shade
-	local imagename=name
 
 	local stained_glass_blocktype = { }
 
@@ -165,7 +147,7 @@ function stained_trapglass_define(arg)
 
 	for myprefix,myglow in pairs(stained_glass_lightlevel) do
 		local glasstype = stained_glass_blocktype[myprefix]
-		local name="trap_" .. name
+		local trapname="trap_" .. name
 
 		-- define myrecipe as a table, pass it in.
 
@@ -183,17 +165,15 @@ function stained_trapglass_define(arg)
 			myrecipe[6] = "dye:white"
 		end
 
-		stainedglass.makenode{blockname=name, glow=myglow, prefix=myprefix, imagename=imagename, walkflag=false}
+		stainedglass.makenode{blockname=trapname, glow=myglow, prefix=myprefix, walkflag=false}
 	end
 end
 
-function stained_glass_define(arg)
+local function stained_glass_define(arg)
 	local code=arg.colorcode
 	local name=arg.colorname
-	local rawdyename=arg.recipe
 	local mydye=arg.recipe
 	local myshadename=arg.shade
-	local imagename=name
 
 	local stained_glass_blocktype = { }
 
@@ -233,14 +213,13 @@ function stained_glass_define(arg)
 			myrecipe[6] = "dye:white"
 		end
 
-		stainedglass.makenode{blockname=name, glow=myglow, prefix=myprefix, imagename=name, walkflag=true}
+		stainedglass.makenode{blockname=name, glow=myglow, prefix=myprefix, walkflag=true}
 
 		if myprefix == "" then
-			local aliasname
 			minetest.register_alias( "stained_glass:" .. code, "stained_glass:" .. name)
 			if string.match(name,"redviolet") then
 				local oldname=name
-				aliasname=string.gsub(name, "redviolet","red_violet") -- need to support red_violet existence, too.
+				local aliasname=string.gsub(name, "redviolet","red_violet") -- need to support red_violet existence, too.
 				minetest.register_alias( "stained_glass:" .. aliasname, "stained_glass:" .. oldname)
 			end
 		end
@@ -257,8 +236,7 @@ end
 -- false means the recipe uses "group:dye,unicolor_xxxxx"
 
 stained_glass= {}
-local worldpath=minetest.get_worldpath()
-local modpath=minetest.get_modpath("stained_glass")
+local modpath = minetest.get_modpath("stained_glass")
 dofile(modpath .. "/settings.txt")
 
 -- the new settings.txt file has a variety of possible settings.
@@ -266,7 +244,7 @@ dofile(modpath .. "/settings.txt")
 -- the stained glass module, where we'll build up the tables to contain
 -- only what we need.
 
-stained_glass_hues = {
+local stained_glass_hues = {
 	{ "yellow", true },
 	{ "lime", false },
 	{ "green", true },
@@ -284,7 +262,7 @@ stained_glass_hues = {
 
 }
 
-stained_glass_shades = {
+local stained_glass_shades = {
 	{"dark_",   3  },
 	{"medium_", 4  },
 	{"",        5  }, -- full brightness
@@ -306,9 +284,7 @@ for i in ipairs(stained_glass_hues) do
 		local shadename = stained_glass_shades[j][1]
 		local shadenumber = stained_glass_shades[j][2]
 
-		local recipevalue = nil
-
- 		recipevalue = "group:dye,unicolor_"..shadename..huename
+		local recipevalue
 		if (shadename == "" and stained_glass_hues[i][2]) then
 			recipevalue = "dye:"..huename
 		elseif (shadename=="pastel_" or shadename=="faint_") then

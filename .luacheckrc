@@ -1,5 +1,6 @@
 globals = {
-    "stainedglass"
+    "stained_glass",
+    "stainedglass",
 }
 
 read_globals = {
