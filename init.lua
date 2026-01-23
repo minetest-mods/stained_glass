@@ -1,6 +1,6 @@
 --[[
 
-Stained Glass 
+Stained Glass
 
 This mod provides luminescent stained glass blocks for Minetest 0.4.7+
 
@@ -18,7 +18,7 @@ Unified Dyes was released under GNU-GPL 2.0, see LICENSE for info.
 More Blocks was released under zlib/libpng for code and CC BY-SA 3.0 Unported for textures, see LICENSE.txt for info.
 
 
-Additional changes by VanessaEzekowitz in July 2013 to take all items 
+Additional changes by VanessaEzekowitz in July 2013 to take all items
 out of creative inventory.
 
 August 2013 -- Jeremy Anderson tries to get this working after the new color
@@ -42,7 +42,7 @@ August 2018 -- altered to use proper colored itemstacks with crafting
 stainedglass = {}
 stainedglass.old_static_nodes = {}
 
-local myglow = LIGHT_MAX-3
+local myglow = core.LIGHT_MAX - 3
 
 minetest.register_node("stained_glass:stained_glass", {
 	description = "Stained Glass",
@@ -138,23 +138,23 @@ end
 
 function stained_trapglass_define(arg)
 	local code=arg.colorcode
-	local name=arg.colorname	
-	local rawdyename=arg.recipe 
-	local mydye=arg.recipe 
+	local name=arg.colorname
+	local rawdyename=arg.recipe
+	local mydye=arg.recipe
 	local myshadename=arg.shade
 	local imagename=name
 
 	local stained_glass_blocktype = { }
 
 	local stained_glass_lightlevel = { }
-	
+
 	if stained_glass.trap_full_light then
-		stained_glass_lightlevel[""] = LIGHT_MAX
+		stained_glass_lightlevel[""] = core.LIGHT_MAX
 		stained_glass_blocktype[""] = "moreblocks:trap_super_glow_glass"
 	end  -- see settings.txt for these settings.
 
 	if stained_glass.trap_med_light then
-		stained_glass_lightlevel["lowglow_"] = LIGHT_MAX-3
+		stained_glass_lightlevel["lowglow_"] = core.LIGHT_MAX - 3
 		stained_glass_blocktype["lowglow_"] = "moreblocks:trap_glow_glass"
 	end
 
@@ -170,9 +170,9 @@ function stained_trapglass_define(arg)
 		-- define myrecipe as a table, pass it in.
 
 		local myrecipe = { mydye, glasstype, glasstype, glasstype }
-		-- those four items will ALWAYS be there.  For faint and pastel, we 
+		-- those four items will ALWAYS be there.  For faint and pastel, we
 		-- need to add additional dyes.  If you have defined a new shade, then
-		-- you should probably handle it here.  
+		-- you should probably handle it here.
 
 		if myshadename == "pastel_" then
 			myrecipe[5] = "dye:white"
@@ -189,23 +189,23 @@ end
 
 function stained_glass_define(arg)
 	local code=arg.colorcode
-	local name=arg.colorname	
-	local rawdyename=arg.recipe 
-	local mydye=arg.recipe 
+	local name=arg.colorname
+	local rawdyename=arg.recipe
+	local mydye=arg.recipe
 	local myshadename=arg.shade
 	local imagename=name
 
 	local stained_glass_blocktype = { }
 
 	local stained_glass_lightlevel = { }
-	
+
 	if stained_glass.full_light then
-		stained_glass_lightlevel[""] = LIGHT_MAX
+		stained_glass_lightlevel[""] = core.LIGHT_MAX
 		stained_glass_blocktype[""] = "moreblocks:super_glow_glass"
 	end  -- see settings.txt for these settings.
 
 	if stained_glass.med_light then
-		stained_glass_lightlevel["lowglow_"] = LIGHT_MAX-3
+		stained_glass_lightlevel["lowglow_"] = core.LIGHT_MAX - 3
 		stained_glass_blocktype["lowglow_"] = "moreblocks:glow_glass"
 	end
 
@@ -220,9 +220,9 @@ function stained_glass_define(arg)
 		-- define myrecipe as a table, pass it in.
 
 		local myrecipe = { mydye, glasstype, glasstype, glasstype }
-		-- those four items will ALWAYS be there.  For faint and pastel, we 
+		-- those four items will ALWAYS be there.  For faint and pastel, we
 		-- need to add additional dyes.  If you have defined a new shade, then
-		-- you should probably handle it here.  
+		-- you should probably handle it here.
 
 		if myshadename == "pastel_" then
 			myrecipe[5] = "dye:white"
@@ -263,8 +263,8 @@ dofile(modpath .. "/settings.txt")
 
 -- the new settings.txt file has a variety of possible settings.
 -- see the file for examples.  We'll access those settings where its important, in
--- the stained glass module, where we'll build up the tables to contain 
--- only what we need. 
+-- the stained glass module, where we'll build up the tables to contain
+-- only what we need.
 
 stained_glass_hues = {
 	{ "yellow", true },
@@ -274,7 +274,7 @@ stained_glass_hues = {
 	{ "cyan", false },
 	{ "skyblue", true },
 	{ "blue", false },
-	{ "violet", false }, 
+	{ "violet", false },
 	{ "magenta", true },
 	{ "redviolet", true },
 	{ "red", true },
@@ -311,7 +311,7 @@ for i in ipairs(stained_glass_hues) do
  		recipevalue = "group:dye,unicolor_"..shadename..huename
 		if (shadename == "" and stained_glass_hues[i][2]) then
 			recipevalue = "dye:"..huename
-		elseif (shadename=="pastel_" or shadename=="faint_") then 
+		elseif (shadename=="pastel_" or shadename=="faint_") then
 			-- force light_dye for pastel and faint colors
 			recipevalue = "group:dye,unicolor_light_"..huename
 		else  -- default case
@@ -354,7 +354,7 @@ for i in ipairs(stained_glass_hues) do
 			--  code, we can't just define the relevant vars and
 			--  move the proc_call after the if-then loop.
 
-		elseif shadename == "light_" or shadename == "pastel_" or shadename == "faint_" then 
+		elseif shadename == "light_" or shadename == "pastel_" or shadename == "faint_" then
 			stained_glass_define({
 				colorcode = huenumber.."_"..shadenumber,
 				colorname = shadename..huename,
@@ -367,7 +367,7 @@ for i in ipairs(stained_glass_hues) do
 				recipe = recipevalue,
 				shade = shadename,
 			}) -- only defines something if the trap is enabled.
-			
+
 		end
 
 	end
